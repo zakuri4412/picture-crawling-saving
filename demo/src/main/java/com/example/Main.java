@@ -69,6 +69,14 @@ public class Main {
             for (WebElement img : cards) {
                 try {
                     String imgUrl = img.getAttribute("src");
+                    String[] parts = imgUrl.split("/");
+                    String filename = parts[parts.length - 1]; // hBP01-001_OSR.png
+                    // Xóa đuôi .png
+                    filename = filename.replace(".png", "");
+
+                    // Lấy phần sau dấu gạch dưới
+                    String[] nameParts = filename.split("_");
+                    String suffix = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "unknown";
                     String title = img.getAttribute("alt");
                     title = title.replaceAll("[\\\\/:*?\"<>|]", ""); // loại ký tự nguy hiểm
                     if (imgUrl == null || imgUrl.isEmpty()) continue;
@@ -76,7 +84,7 @@ public class Main {
                         imgUrl = "https://hololive-official-cardgame.com" + imgUrl;
                     }
 
-                    String fileName = "card_" + index + "_" + title + ".jpg";
+                    String fileName = "card_" + index + "_" + title + "_" + suffix + ".jpg";
                     saveImage(imgUrl, name + "/" + fileName);
                     System.out.println("Saved " + title);
                     index++;
