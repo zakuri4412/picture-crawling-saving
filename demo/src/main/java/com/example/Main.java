@@ -16,12 +16,13 @@ public class Main {
         WebDriver driver = new ChromeDriver(options);
 
         try {
-            String name = "VGE-D-BT01";
-            driver.get("https://en.cf-vanguard.com/cardlist/cardsearch/?expansion=167");
+            String name = "hSD05";
+            driver.get("https://hololive-official-cardgame.com/cardlist/cardsearch/?expansion=hSD05");
             JavascriptExecutor js = (JavascriptExecutor) driver;
 
             // Lấy số kết quả "281 Results"
-            WebElement resultElement = driver.findElement(By.cssSelector(".number"));
+            WebElement resultElement = driver.findElement(By.cssSelector(".num.bold"));
+
             String resultText = resultElement.getText(); // ví dụ: "281 Results"
             int expectedCount = Integer.parseInt(resultText.replaceAll("[^0-9]", ""));
             System.out.println("Expecting " + expectedCount + " cards...");
@@ -29,7 +30,7 @@ public class Main {
             // Scroll cho đến khi đủ ảnh
             int lastCount = 0;
             while (true) {
-                List<WebElement> cards = driver.findElements(By.cssSelector("#cardlist-container img"));
+                List<WebElement> cards = driver.findElements(By.cssSelector(".cardlist-Result_List_Gallery li.object-fit-img img"));
                 int currentCount = cards.size();
 
                 System.out.println("Currently loaded: " + currentCount);
@@ -58,7 +59,7 @@ public class Main {
             Thread.sleep(2000);
 
             // Lấy tất cả ảnh
-            List<WebElement> cards = driver.findElements(By.cssSelector("#cardlist-container img"));
+            List<WebElement> cards = driver.findElements(By.cssSelector(".cardlist-Result_List_Gallery li.object-fit-img img"));
             System.out.println("Found " + cards.size() + " cards.");
 
             File folder = new File(name);
@@ -69,13 +70,13 @@ public class Main {
                 try {
                     String imgUrl = img.getAttribute("src");
                     String title = img.getAttribute("alt");
-
+                    title = title.replaceAll("[\\\\/:*?\"<>|]", ""); // loại ký tự nguy hiểm
                     if (imgUrl == null || imgUrl.isEmpty()) continue;
                     if (!imgUrl.startsWith("http")) {
-                        imgUrl = "https://en.cf-vanguard.com" + imgUrl;
+                        imgUrl = "https://hololive-official-cardgame.com" + imgUrl;
                     }
 
-                    String fileName = "card_" + index + "_" + title.replaceAll("[^a-zA-Z0-9]", "_") + ".jpg";
+                    String fileName = "card_" + index + "_" + title + ".jpg";
                     saveImage(imgUrl, name + "/" + fileName);
                     System.out.println("Saved " + title);
                     index++;
